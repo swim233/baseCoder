@@ -10,5 +10,6 @@ func main() {
 	utils.Bot.Debug = true
 	b := utils.Bot.AddHandle()
 	b.NewInlineQueryProcessor("", handler.InlineQueryHandler)
+	b.NewCommandProcessor("encode", handler.EncodeCommand)
 	b.Run()
 }
