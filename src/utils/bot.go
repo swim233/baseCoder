@@ -2,13 +2,13 @@ package utils
 
 import (
 	"fmt"
-	"github.com/swim233/baseCoder/utils/logger"
 	"net/http"
 	"net/url"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
+
+	"github.com/swim233/baseCoder/utils/logger"
 
 	tgbotapi "github.com/ijnkawakaze/telegram-bot-api"
 	godotenv "github.com/joho/godotenv"
@@ -18,8 +18,6 @@ var Bot *tgbotapi.BotAPI
 
 type Config struct {
 	Token       string
-	UserID      string
-	IntUserID   int64
 	DebugFlag   bool
 	ApiLogLevel int
 }
@@ -46,7 +44,6 @@ func InitBot() {
 
 		// 写入默认的环境变量内容
 		defaultEnv := `Token=YOUR_TOKEN_ID
-UserID=YOUR_USER_ID
 LogLevel=DEBUG/INFO/WARN/ERROR
 ApiLogLevel=DEBUG/INFO/WARN/ERROR
 `
@@ -64,9 +61,7 @@ ApiLogLevel=DEBUG/INFO/WARN/ERROR
 	BotConfig.ApiLogLevel = logger.ParseLogLevel(os.Getenv("ApiLogLevel"))
 	logger.SetLogLevel(loglevel)
 	BotConfig.Token = os.Getenv("Token")
-	BotConfig.UserID = os.Getenv("UserID")
 
-	BotConfig.IntUserID, err = strconv.ParseInt(BotConfig.UserID, 10, 64)
 	if err != nil {
 		logger.Error("%s", err)
 	}
