@@ -20,9 +20,16 @@ func base64Encoder(str string) string {
 		s := []byte(str)
 		data := base64.StdEncoding.EncodeToString(s)
 		return "`" + data + "`"
-	} else {
-		s := []byte(str)
-		data := base64.StdEncoding.EncodeToString(s)
+	}
+	s := []byte(str)
+	data := base64.StdEncoding.EncodeToString(s)
+	return data
+
+}
+func base64FileEncoder(src []byte) string {
+	if !(src == nil) {
+		data := base64.StdEncoding.EncodeToString(src)
 		return data
 	}
+	return ""
 }
