@@ -11,6 +11,13 @@ func EncodeCommand(update tgbotapi.Update) error {
 		ReplyEncodeCommand(update)
 		return nil
 	} else {
+		if update.Message.CommandArguments() == "" {
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "请输入需要编码的内容或回复一条消息")
+			msg.ReplyToMessageID = update.Message.MessageID
+			msg.AllowSendingWithoutReply = true
+			utils.Bot.Send(msg)
+			return nil
+		}
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Base64编码结果\n"+base64Encoder(input.CommandArguments()))
 		msg.ParseMode = tgbotapi.ModeMarkdownV2
 		msg.ReplyToMessageID = update.Message.MessageID
@@ -27,6 +34,13 @@ func DecodeCommand(update tgbotapi.Update) error {
 	} else {
 		data, err := base64Decoder(input.CommandArguments())
 		if err == nil {
+			if update.Message.CommandArguments() == "" {
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "请输入需要解码的内容或回复一条消息")
+				msg.ReplyToMessageID = update.Message.MessageID
+				msg.AllowSendingWithoutReply = true
+				utils.Bot.Send(msg)
+				return nil
+			}
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Base64解码结果\n"+data)
 			msg.ParseMode = tgbotapi.ModeMarkdownV2
 			msg.ReplyToMessageID = update.Message.MessageID
