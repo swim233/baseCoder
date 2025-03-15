@@ -16,12 +16,13 @@ func EncodeCommand(update tgbotapi.Update) error {
 		return nil
 	} else {
 		if (update.Message.CommandArguments() == "") && (network.GetFileID(update) == "") {
-			sendEncodingData(update, "请输入需要编码的内容或回复一条消息")
+			SendEncodingData(update, "请输入需要编码的内容或回复一条消息")
 		} else if (update.Message.CommandArguments() == "") && (network.GetFileID(update) != "") {
 			ReplyFileEncodeCommand(update)
+			return nil
 		}
 		data := base64Encoder(input.CommandArguments())
-		sendEncodingData(update, data)
+		SendEncodingData(update, data)
 		return nil
 	}
 }
@@ -34,12 +35,12 @@ func DecodeCommand(update tgbotapi.Update) error {
 		data, err := base64Decoder(input.CommandArguments())
 		if err == nil {
 			if update.Message.CommandArguments() == "" {
-				sendEncodingData(update, "请输入需要编码的内容或回复一条消息")
+				SendEncodingData(update, "请输入需要编码的内容或回复一条消息")
 			}
-			sendEncodingData(update, "Base64解码结果\n"+data)
+			SendEncodingData(update, "Base64解码结果\n"+data)
 			return nil
 		}
-		sendEncodingData(update, "格式有误")
+		SendEncodingData(update, "格式有误")
 
 	}
 	return nil
@@ -49,7 +50,7 @@ func ReplyEncodeCommand(update tgbotapi.Update) error {
 	input := update.Message.ReplyToMessage
 	if input != nil {
 		data := base64Encoder(input.Text)
-		sendEncodingData(update, "Base64编码结果\n"+data)
+		SendEncodingData(update, "Base64编码结果\n"+data)
 	}
 	return nil
 
@@ -59,9 +60,9 @@ func ReplyDecodeCommand(update tgbotapi.Update) error {
 	input := update.Message
 	data, err := base64Decoder(input.ReplyToMessage.Text)
 	if err == nil {
-		sendEncodingData(update, "Base64解码结果\n"+data)
+		SendEncodingData(update, "Base64解码结果\n"+data)
 	} else {
-		sendEncodingData(update, "格式有误")
+		SendEncodingData(update, "格式有误")
 	}
 	return nil
 }
@@ -70,7 +71,7 @@ func ReplyDecodeCommand(update tgbotapi.Update) error {
 func ReplyFileEncodeCommand(update tgbotapi.Update) error {
 	data, err := FileEncoder(update)
 	if err != nil {
-		sendEncodingData(update, err.Error())
+		SendEncodingData(update, err.Error())
 		return err
 	}
 	FileSender(data, update)
@@ -78,7 +79,7 @@ func ReplyFileEncodeCommand(update tgbotapi.Update) error {
 }
 
 // 发送编码结果
-func sendEncodingData(update tgbotapi.Update, data string) error {
+func SendEncodingData(update tgbotapi.Update, data string) error {
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, data)
 	msg.ParseMode = tgbotapi.ModeMarkdownV2
 	msg.AllowSendingWithoutReply = true

@@ -17,9 +17,10 @@ import (
 var Bot *tgbotapi.BotAPI
 
 type Config struct {
-	Token       string
-	DebugFlag   bool
-	ApiLogLevel int
+	Token             string
+	DebugFlag         bool
+	ApiLogLevel       int
+	DecodeFileMaxSize int
 }
 
 var (
@@ -46,6 +47,7 @@ func InitBot() {
 		defaultEnv := `Token=YOUR_TOKEN_ID
 LogLevel=DEBUG/INFO/WARN/ERROR
 ApiLogLevel=DEBUG/INFO/WARN/ERROR
+DecodeFileMaxSize=1MB
 `
 		if _, err := file.WriteString(defaultEnv); err != nil {
 			logger.Error("写入 .env 文件失败: %v", err)
@@ -57,11 +59,18 @@ ApiLogLevel=DEBUG/INFO/WARN/ERROR
 		logger.Error("%s", err)
 	}
 
+	//读取环境变量
 	loglevel := logger.ParseLogLevel(os.Getenv("LogLevel"))
 	BotConfig.ApiLogLevel = logger.ParseLogLevel(os.Getenv("ApiLogLevel"))
 	logger.SetLogLevel(loglevel)
 	BotConfig.Token = os.Getenv("Token")
-
+	BotConfig.DecodeFileMaxSize = func() int {
+		size, err := parseFileSize(os.Getenv("DecodeFileMaxSize"))
+		if err != nil {
+			logger.Error(err.Error())
+		}
+		return size
+	}()
 	if err != nil {
 		logger.Error("%s", err)
 	}
@@ -141,4 +150,32 @@ func UpdateEnvValue(key, newValue string) error {
 	}
 
 	return nil
+}
+
+// 将常用单位解析为字节数
+func parseFileSize(sizeStr string) (int, error) {
+	var size float64
+	var unit string
+
+	// 分离数字和单位
+	_, err := fmt.Sscanf(sizeStr, "%f%s", &size, &unit)
+	if err != nil {
+		return 0, err
+	}
+
+	// 转换单位为字节数
+	switch strings.ToUpper(unit) {
+	case "B":
+		return int(size), nil
+	case "KB":
+		return int(size * 1024), nil
+	case "MB":
+		return int(size * 1024 * 1024), nil
+	case "GB":
+		return int(size * 1024 * 1024 * 1024), nil
+	case "TB":
+		return int(size * 1024 * 1024 * 1024 * 1024), nil
+	default:
+		return 0, fmt.Errorf("未知的单位: %s", unit)
+	}
 }
