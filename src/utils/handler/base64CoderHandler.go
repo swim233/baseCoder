@@ -2,16 +2,27 @@ package handler
 
 import (
 	"encoding/base64"
+	"errors"
 	"strings"
 )
 
 func base64Decoder(str string) (string, error) {
-	fmtstr := strings.Trim(str, " ")
-	data, err := base64.StdEncoding.DecodeString(fmtstr)
-	if !(fmtstr == "") {
-		return "`" + string(data) + "`", err
+	var resultBuilder strings.Builder
+	var successTimes int
+	formattedString := strings.Fields(str)
+	for _, v := range formattedString {
+		if decodedText, err := base64.StdEncoding.DecodeString(v); err == nil {
+			resultBuilder.Write(decodedText)
+			resultBuilder.WriteString("\n")
+			successTimes++
+		} else {
+			resultBuilder.WriteString(v + "\n")
+		}
+	}
+	if successTimes == 0 {
+		return "`" + string(str) + "`", errors.New("格式不符合")
 	} else {
-		return string(data), err
+		return resultBuilder.String(), nil
 	}
 
 }

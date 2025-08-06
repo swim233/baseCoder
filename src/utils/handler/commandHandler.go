@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+	"html"
 	"os"
 	"strconv"
 
@@ -80,8 +82,9 @@ func ReplyFileEncodeCommand(update tgbotapi.Update) error {
 
 // 发送编码结果
 func SendEncodingData(update tgbotapi.Update, data string) error {
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, data)
-	msg.ParseMode = tgbotapi.ModeMarkdownV2
+	formattedData := fmt.Sprintf("<code>%s</code>", html.EscapeString(data))
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, formattedData)
+	msg.ParseMode = tgbotapi.ModeHTML
 	msg.AllowSendingWithoutReply = true
 	msg.ReplyToMessageID = int(update.Message.MessageID)
 	utils.Bot.Send(msg)

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"regexp"
 	"strings"
 
 	"github.com/swim233/baseCoder/utils/logger"
@@ -23,11 +22,6 @@ type Config struct {
 	DecodeFileMaxSize int
 }
 
-var (
-	CheckFlag = 0
-	CheckXm   = regexp.MustCompile(".*羡.*慕.*")
-	Mode      = "match"
-)
 var BotConfig Config
 
 func InitBot() {
@@ -103,6 +97,7 @@ DecodeFileMaxSize=1MB
 		Bot.Client = client
 		logger.Info("Using proxy: %s", proxy)
 	}
+	logger.Info("Successful Login : Bot Name = %s \n Bot UserName = %s \n Bot token = %s", Bot.Self.FullName(), Bot.Self.UserName, Bot.Token)
 }
 
 func FetchProxy() string {
@@ -148,7 +143,6 @@ func UpdateEnvValue(key, newValue string) error {
 	if err != nil {
 		return fmt.Errorf("写入文件失败: %v", err)
 	}
-
 	return nil
 }
 
