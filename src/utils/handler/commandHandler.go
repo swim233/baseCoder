@@ -34,7 +34,7 @@ func DecodeCommand(update tgbotapi.Update) error {
 		ReplyDecodeCommand(update)
 		return nil
 	} else {
-		data, err := base64Decoder(input.CommandArguments())
+		data, err, _ := base64Decoder(input.CommandArguments())
 		if err == nil {
 			if update.Message.CommandArguments() == "" {
 				SendEncodingData(update, "请输入需要编码的内容或回复一条消息")
@@ -60,7 +60,7 @@ func ReplyEncodeCommand(update tgbotapi.Update) error {
 
 func ReplyDecodeCommand(update tgbotapi.Update) error {
 	input := update.Message
-	data, err := base64Decoder(input.ReplyToMessage.Text)
+	data, err, _ := base64Decoder(input.ReplyToMessage.Text)
 	if err == nil {
 		SendEncodingData(update, "Base64解码结果\n"+data)
 	} else {

@@ -16,8 +16,8 @@ func InlineQueryHandler(update tgbotapi.Update) error {
 	)
 	encodingArticle.Description = "base64编码结果预览" + encodingData
 
-	decodingData, err := base64Decoder(input)
-	decodingArticle := tgbotapi.NewInlineQueryResultArticleMarkdownV2(
+	decodingData, err, successTimes := base64Decoder(input)
+	decodingArticle := tgbotapi.NewInlineQueryResultArticleHTML(
 		"2", // 唯一ID
 		"解码结果",
 		"Base64解码结果\n"+decodingData,
@@ -25,7 +25,7 @@ func InlineQueryHandler(update tgbotapi.Update) error {
 	decodingArticle.Description = "base64解码结果预览" + decodingData
 
 	results := []interface{}{encodingArticle}
-	if !(err != nil) {
+	if err == nil || successTimes != 0 {
 		results = append(results, decodingArticle)
 	}
 	// 构造响应

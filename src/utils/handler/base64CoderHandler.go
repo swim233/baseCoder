@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func base64Decoder(str string) (string, error) {
+func base64Decoder(str string) (string, error, int) {
 	var resultBuilder strings.Builder
 	var successTimes int
 	formattedString := strings.Fields(str)
@@ -20,9 +20,9 @@ func base64Decoder(str string) (string, error) {
 		}
 	}
 	if successTimes == 0 {
-		return "`" + string(str) + "`", errors.New("格式不符合")
+		return "`" + string(str) + "`", errors.New("格式不符合"), 0
 	} else {
-		return resultBuilder.String(), nil
+		return resultBuilder.String(), nil, successTimes
 	}
 
 }
